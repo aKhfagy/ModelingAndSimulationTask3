@@ -26,11 +26,26 @@ namespace InventoryModels
         public int StartOrderQuantity { get; set; }
         public List<Distribution> DemandDistribution { get; set; }
         public List<Distribution> LeadDaysDistribution { get; set; }
-
+        public static string PATH = "";
         ///////////// OUTPUTS /////////////
 
         public List<SimulationCase> SimulationCases { get; set; }
         public PerformanceMeasures PerformanceMeasures { get; set; }
+
+        public void ReadInput()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CalculatePerformanceMeasures()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Simulate()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

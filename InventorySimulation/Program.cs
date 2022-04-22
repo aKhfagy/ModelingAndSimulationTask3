@@ -1,4 +1,6 @@
-﻿using System;
+﻿using InventoryModels;
+using InventoryTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +18,18 @@ namespace InventorySimulation
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new FileNameForum());
+            if (SimulationSystem.PATH.Length > 0)
+            {
+                SimulationSystem system = new SimulationSystem();
+                system.ReadInput();
+                system.Simulate();
+                system.CalculatePerformanceMeasures();
+
+                string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
+                MessageBox.Show(result);
+                Application.Run(new DataView(system));
+            }
         }
     }
 }
