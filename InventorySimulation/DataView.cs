@@ -43,11 +43,8 @@ namespace InventorySimulation
                 obj[7] = simulationCase.ShortageQuantity;
                 obj[8] = simulationCase.OrderQuantity;
                 obj[9] = simulationCase.RandomLeadDays;
-                if(simulationCase.DayWithinCycle == 1 && simulationCase.Cycle > 1)
-                    obj[10] = simulationCase.LeadDays;
-                else 
-                    obj[10] = 0;
-                obj[11] = simulationCase.LeadDays;
+                obj[10] = simulationCase.LeadDays;
+                obj[11] = simulationCase.DayUntillArrival;
                 dt.Rows.Add(obj);
             }
 
@@ -69,6 +66,11 @@ namespace InventorySimulation
         }
 
         private void DataView_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

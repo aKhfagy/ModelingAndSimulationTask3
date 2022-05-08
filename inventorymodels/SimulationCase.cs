@@ -19,5 +19,7 @@ namespace InventoryModels
         public int OrderQuantity { get; set; }
         public int RandomLeadDays { get; set; }
         public int LeadDays { get; set; }
+        public int DayUntillArrival { get; set; }
+
     }
 }

@@ -120,7 +120,9 @@ namespace InventoryModels
             prev.OrderQuantity = this.StartOrderQuantity;
             this.OrderQuantity = prev.OrderQuantity;
             prev.EndingInventory = this.StartInventoryQuantity;
-            prev.LeadDays = this.StartLeadDays;
+            prev.DayUntillArrival = this.StartLeadDays;
+            prev.ShortageQuantity = 0;
+            bool flag = false;
             for (int day = 1; day <= this.NumberOfDays; day++)
             {
                 SimulationCase simulationCase = new SimulationCase();
@@ -130,35 +132,50 @@ namespace InventoryModels
                 simulationCase.Cycle = ((day - 1) / this.ReviewPeriod) + 1;
                 simulationCase.DayWithinCycle = ((day - 1) % this.ReviewPeriod) + 1;
 
-                if(simulationCase.DayWithinCycle == 1)
+                if (simulationCase.DayWithinCycle == 1)
                 {
-                    if(simulationCase.Cycle > 1)
+                    if (simulationCase.Cycle > 1)
                     {
                         simulationCase.RandomLeadDays = random.Next(1, 10);
                         foreach (Distribution distribution in this.LeadDaysDistribution)
                         {
-                            if(simulationCase.RandomLeadDays >= distribution.MinRange 
+                            if (simulationCase.RandomLeadDays >= distribution.MinRange
                                 && simulationCase.RandomLeadDays <= distribution.MaxRange)
                             {
                                 simulationCase.LeadDays = distribution.Value;
+                                simulationCase.DayUntillArrival = distribution.Value;
                                 break;
                             }
                         }
                         simulationCase.OrderQuantity = this.OrderUpTo - prev.EndingInventory + prev.ShortageQuantity;
                         this.OrderQuantity = simulationCase.OrderQuantity;
+                        simulationCase.BeginningInventory = prev.EndingInventory;
                         prev.ShortageQuantity = 0;
+                        flag = false;
+                    }
+                    else
+                    {
+                        simulationCase.BeginningInventory = prev.EndingInventory;
+                        simulationCase.DayUntillArrival = prev.DayUntillArrival - 1;
                     }
                 }
-
-                if(prev.LeadDays >= 1)
-                {
-                    simulationCase.LeadDays = prev.LeadDays - 1;
-                    simulationCase.BeginningInventory = prev.EndingInventory;
-                }
-                else if(prev.LeadDays == 0)
-                {
-                    simulationCase.LeadDays = 0;
-                    simulationCase.BeginningInventory = prev.EndingInventory + this.OrderQuantity;
+                else { 
+                    if (prev.DayUntillArrival >= 1)
+                    {
+                        simulationCase.DayUntillArrival = prev.DayUntillArrival - 1;
+                        simulationCase.BeginningInventory = prev.EndingInventory;
+                    }
+                    else if (flag == false)
+                    {
+                        simulationCase.DayUntillArrival = 0;
+                        simulationCase.BeginningInventory = prev.EndingInventory + this.OrderQuantity;
+                        flag = true;
+                    }
+                    else
+                    {
+                        simulationCase.DayUntillArrival = 0;
+                        simulationCase.BeginningInventory = prev.EndingInventory;
+                    }
                 }
 
                 foreach (Distribution distribution in this.DemandDistribution)
@@ -170,19 +187,32 @@ namespace InventoryModels
                         break;
                     }
                 }
-
-                if(simulationCase.Demand <= simulationCase.BeginningInventory)
+                
+                if(simulationCase.BeginningInventory > 0)
                 {
-                    simulationCase.EndingInventory = simulationCase.BeginningInventory - simulationCase.Demand;
-                    simulationCase.ShortageQuantity = prev.ShortageQuantity;
+                    int inventory = simulationCase.BeginningInventory;
+                    int required = prev.ShortageQuantity + simulationCase.Demand;
+                    // take shortage out
+                    if(inventory >= required)
+                    {
+                        inventory -= required;
+                        simulationCase.ShortageQuantity = 0;
+                        simulationCase.EndingInventory = inventory;
+                    }
+                    else
+                    {
+                        simulationCase.ShortageQuantity = required - inventory;
+                        simulationCase.EndingInventory = 0;
+                    }
                 }
                 else
                 {
                     simulationCase.EndingInventory = 0;
-                    simulationCase.ShortageQuantity = simulationCase.ShortageQuantity + (simulationCase.Demand - simulationCase.BeginningInventory);
+                    simulationCase.ShortageQuantity = prev.ShortageQuantity + simulationCase.Demand;
                 }
 
                 SimulationCases.Add(simulationCase);
+
                 prev = simulationCase;
 
             }
