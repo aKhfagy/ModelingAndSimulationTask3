@@ -15,6 +15,10 @@ namespace InventoryModels
             LeadDaysDistribution = new List<Distribution>();
             SimulationCases = new List<SimulationCase>();
             PerformanceMeasures = new PerformanceMeasures();
+
+            this.ReadInput();
+            this.Simulate();
+            this.CalculatePerformanceMeasures();
         }
 
         ///////////// INPUTS /////////////
@@ -36,6 +40,8 @@ namespace InventoryModels
 
         public void ReadInput()
         {
+            this.DemandDistribution = new List<Distribution>();
+            this.LeadDaysDistribution = new List<Distribution>();
             string[] lines = File.ReadAllLines(PATH);
             this.OrderUpTo = int.Parse(lines[1]); // 2
             this.ReviewPeriod = int.Parse(lines[4]); // 5
@@ -101,30 +107,38 @@ namespace InventoryModels
 
         public void CalculatePerformanceMeasures()
         {
-            decimal endingQn = 0;
-            decimal shortageQn = 0;
+            this.PerformanceMeasures = new PerformanceMeasures();
+            this.PerformanceMeasures.EndingInventoryAverage = 0;
+            this.PerformanceMeasures.ShortageQuantityAverage = 0;
             foreach (SimulationCase simulation in this.SimulationCases)
             {
-                endingQn += simulation.EndingInventory;
-                shortageQn += simulation.ShortageQuantity;
+                this.PerformanceMeasures.EndingInventoryAverage += simulation.EndingInventory;
+                this.PerformanceMeasures.ShortageQuantityAverage += simulation.ShortageQuantity;
             }
 
-            this.PerformanceMeasures.EndingInventoryAverage = endingQn / this.NumberOfDays;
-            this.PerformanceMeasures.ShortageQuantityAverage = shortageQn / this.NumberOfDays;
+            this.PerformanceMeasures.EndingInventoryAverage /= this.NumberOfDays;
+            this.PerformanceMeasures.ShortageQuantityAverage /= this.NumberOfDays;
         }
 
         public void Simulate()
         {
+            this.SimulationCases = new List<SimulationCase>();
+
             Random random = new Random();
             SimulationCase prev = new SimulationCase();
-            prev.OrderQuantity = this.StartOrderQuantity;
-            this.OrderQuantity = prev.OrderQuantity;
-            prev.EndingInventory = this.StartInventoryQuantity;
-            prev.DayUntillArrival = this.StartLeadDays;
-            prev.ShortageQuantity = 0;
+
             bool flag = false;
             for (int day = 1; day <= this.NumberOfDays; day++)
             {
+                if(day == 1)
+                {
+                    prev.OrderQuantity = this.StartOrderQuantity;
+                    this.OrderQuantity = prev.OrderQuantity;
+                    prev.EndingInventory = this.StartInventoryQuantity;
+                    prev.DayUntillArrival = this.StartLeadDays;
+                    prev.ShortageQuantity = 0;
+                }
+
                 SimulationCase simulationCase = new SimulationCase();
                 simulationCase.Day = day;
                 simulationCase.RandomDemand = random.Next(1, 100);
@@ -210,12 +224,14 @@ namespace InventoryModels
                     simulationCase.EndingInventory = 0;
                     simulationCase.ShortageQuantity = prev.ShortageQuantity + simulationCase.Demand;
                 }
-
+                
                 SimulationCases.Add(simulationCase);
-
+                
                 prev = simulationCase;
 
             }
+
+
         }
 
     }

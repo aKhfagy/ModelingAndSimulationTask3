@@ -18,17 +18,21 @@ namespace InventorySimulation
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FileNameForum());
+            SimulationSystem.PATH = System.Environment.CurrentDirectory + @"\TestCases\TestCase1.txt";
             if (SimulationSystem.PATH.Length > 0)
             {
                 SimulationSystem system = new SimulationSystem();
-                system.ReadInput();
-                system.Simulate();
-                system.CalculatePerformanceMeasures();
 
-                string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
+                //foreach (var simulation in system.SimulationCases)
+                //{
+                //    MessageBox.Show(simulation.Day.ToString() + simulation.Cycle.ToString() + simulation.DayWithinCycle.ToString() + simulation.BeginningInventory.ToString() +
+                //        simulation.Demand.ToString() + simulation.EndingInventory.ToString() + simulation.ShortageQuantity.ToString() + simulation.OrderQuantity.ToString() +
+                //        simulation.LeadDays.ToString() + simulation.RandomDemand.ToString() + simulation.RandomLeadDays.ToString());
+                //}
+
+                string result = TestingManager.Test(system, "TestCase1.txt");
                 MessageBox.Show(result);
-                Application.Run(new DataView(system));
+                //Application.Run(new DataView(system));
             }
         }
     }
