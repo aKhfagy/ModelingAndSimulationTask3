@@ -112,12 +112,12 @@ namespace InventoryModels
             this.PerformanceMeasures.ShortageQuantityAverage = 0;
             foreach (SimulationCase simulation in this.SimulationCases)
             {
-                this.PerformanceMeasures.EndingInventoryAverage += simulation.EndingInventory;
-                this.PerformanceMeasures.ShortageQuantityAverage += simulation.ShortageQuantity;
+                this.PerformanceMeasures.EndingInventoryAverage = this.PerformanceMeasures.EndingInventoryAverage + 
+                    ((decimal)simulation.EndingInventory / (decimal)this.NumberOfDays);
+                this.PerformanceMeasures.ShortageQuantityAverage = this.PerformanceMeasures.ShortageQuantityAverage + 
+                    ((decimal)simulation.ShortageQuantity / (decimal)this.NumberOfDays);
             }
 
-            this.PerformanceMeasures.EndingInventoryAverage /= this.NumberOfDays;
-            this.PerformanceMeasures.ShortageQuantityAverage /= this.NumberOfDays;
         }
 
         public void Simulate()
