@@ -40,7 +40,7 @@ namespace InventorySimulation
                 
                 string result = TestingManager.Test(system, "TestCase1.txt");
                 MessageBox.Show(result);
-                //Application.Run(new DataView(system));
+                Application.Run(new DataView(system));
             }
         }
     }
