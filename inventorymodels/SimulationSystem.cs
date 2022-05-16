@@ -161,7 +161,7 @@ namespace InventoryModels
                                 break;
                             }
                         }
-                        simulationCase.OrderQuantity = 0;
+                        simulationCase.OrderQuantity = this.OrderUpTo - prev.EndingInventory + prev.ShortageQuantity;
                         this.OrderQuantity = simulationCase.OrderQuantity;
                         simulationCase.BeginningInventory = prev.EndingInventory;
                         prev.ShortageQuantity = 0;
@@ -180,7 +180,8 @@ namespace InventoryModels
                         simulationCase.DayUntillArrival = prev.DayUntillArrival - 1;
                         simulationCase.BeginningInventory = prev.EndingInventory;
                     }
-                    else if (flag == false)
+                    else if (!flag)
+                    else if (!flag)
                     {
                         simulationCase.DayUntillArrival = 0;
                         simulationCase.BeginningInventory = prev.EndingInventory + this.OrderQuantity;
