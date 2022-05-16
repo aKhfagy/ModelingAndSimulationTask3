@@ -30,6 +30,14 @@ namespace InventorySimulation
                 //        simulation.LeadDays.ToString() + simulation.RandomDemand.ToString() + simulation.RandomLeadDays.ToString());
                 //}
 
+                //for (int i = 0; i < 20; i++)
+                //{
+                //    var s = new SimulationCase();
+                //    s.RandomDemand = 1;
+                //    s.RandomLeadDays = 1;
+                //    system.SimulationCases.Add(s);
+                //}
+                
                 string result = TestingManager.Test(system, "TestCase1.txt");
                 MessageBox.Show(result);
                 //Application.Run(new DataView(system));
